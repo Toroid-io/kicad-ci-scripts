@@ -22,8 +22,7 @@ import time
 
 from contextlib import contextmanager
 
-electronics_root = os.path.dirname(os.path.abspath(__file__))
-repo_root = electronics_root
+repo_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(repo_root)
 
 from util import file_util
@@ -57,8 +56,8 @@ def eeschema_export_bom(output_directory):
     time.sleep(2)
 
 def export_bom(sch_name):
-    schematic_file = os.path.join(electronics_root, sch_name+'.sch')
-    output_dir = os.path.join(electronics_root, 'build')
+    schematic_file = os.path.join(repo_root, '../'+sch_name+'.sch')
+    output_dir = os.path.join(repo_root, 'build')
     file_util.mkdir_p(output_dir)
 
     screencast_output_file = os.path.join(output_dir, 'export_bom_screencast.ogv')
@@ -73,8 +72,8 @@ def export_bom(sch_name):
     subprocess.check_call([
         'python',
         '-u',
-        os.path.join(electronics_root, 'bom', 'generate_bom_csv.py'),
-        os.path.join(electronics_root, sch_name+'.xml'),
+        os.path.join(repo_root, 'bom', 'generate_bom_csv.py'),
+        os.path.join(repo_root, sch_name+'.xml'),
         os.path.join(output_dir, 'bom.csv'),
     ])
 

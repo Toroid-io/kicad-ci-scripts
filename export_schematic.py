@@ -23,6 +23,7 @@ import time
 from contextlib import contextmanager
 
 repo_root = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.join(repo_root, '../')
 sys.path.append(repo_root)
 
 from util import file_util
@@ -75,13 +76,15 @@ def eeschema_plot_schematic(output_directory):
     time.sleep(2)
 
 def export_schematic(sch_name):
-    schematic_file = os.path.join(repo_root, '../'+sch_name+'.sch')
-    output_dir = os.path.join(repo_root, '../CI-BUILD')
+    sch_file_path = os.path.dirname(sch_name)
+    sch_file_name = os.path.basename(sch_name)
+    schematic_file = os.path.join(project_root, sch_name+'.sch')
+    output_dir = os.path.join(project_root, 'CI-BUILD')
     file_util.mkdir_p(output_dir)
 
     screencast_output_file = os.path.join(output_dir, 'export_schematic_screencast.ogv')
-    schematic_output_pdf_file = os.path.join(output_dir, sch_name+'.pdf')
-    schematic_output_png_file = os.path.join(output_dir, sch_name+'.png')
+    schematic_output_pdf_file = os.path.join(output_dir, sch_file_name+'.pdf')
+    schematic_output_png_file = os.path.join(output_dir, sch_file_name+'.png')
 
     with versioned_schematic(schematic_file):
         with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):

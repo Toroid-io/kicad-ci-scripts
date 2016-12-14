@@ -50,7 +50,7 @@ class PopenContext(subprocess.Popen):
 def xdotool(command):
     return subprocess.check_output(['xdotool'] + command)
 
-def wait_for_window(name, window_regex, timeout=10):
+def wait_for_window(name, window_regex, timeout=100):
     DELAY = 0.5
     logger.info('Waiting for %s window...', name)
     for i in range(int(timeout/DELAY)):

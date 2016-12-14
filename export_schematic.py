@@ -76,7 +76,7 @@ def eeschema_plot_schematic(output_directory):
 
 def export_schematic(sch_name):
     schematic_file = os.path.join(repo_root, '../'+sch_name+'.sch')
-    output_dir = os.path.join(repo_root, 'build')
+    output_dir = repo_root
     file_util.mkdir_p(output_dir)
 
     screencast_output_file = os.path.join(output_dir, 'export_schematic_screencast.ogv')

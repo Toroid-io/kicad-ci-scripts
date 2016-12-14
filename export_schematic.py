@@ -22,8 +22,8 @@ import time
 
 from contextlib import contextmanager
 
-electronics_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-repo_root = os.path.dirname(electronics_root)
+electronics_root = os.path.dirname(os.path.abspath(__file__))
+repo_root = electronics_root
 sys.path.append(repo_root)
 
 from util import file_util

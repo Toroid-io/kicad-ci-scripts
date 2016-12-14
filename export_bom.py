@@ -79,5 +79,5 @@ def export_bom(sch_name):
 
 
 if __name__ == '__main__':
-    export_bom(sys.argv[0])
+    export_bom(sys.argv[1])
 

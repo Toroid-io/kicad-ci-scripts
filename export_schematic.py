@@ -100,4 +100,4 @@ def export_schematic(sch_name):
    ])
 
 if __name__ == '__main__':
-    export_schematic(sys.argv[0])
+    export_schematic(sys.argv[1])

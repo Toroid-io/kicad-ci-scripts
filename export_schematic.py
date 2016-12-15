@@ -38,39 +38,37 @@ from export_util import (
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-def eeschema_plot_schematic(output_directory):
+def eeschema_plot_schematic(output_name):
     wait_for_window('eeschema', '\[')
 
     logger.info('Focus main eeschema window')
     xdotool(['search', '--name', '\[', 'windowfocus'])
 
-    logger.info('Open File->Plot->Plot')
+    logger.info('Open File->Print')
     xdotool(['key', 'alt+f'])
-    xdotool(['key', 'p'])
-    xdotool(['key', 'p'])
+    xdotool(['key', 'n'])
+    xdotool(['key', 'n'])
+    xdotool(['key', 'Return'])
 
-    wait_for_window('plot', 'Plot')
-    xdotool(['search', '--name', 'Plot', 'windowfocus'])
+    wait_for_window('print', 'Print')
+
+    logger.info('Set color output')
+    xdotool(['key', 'alt+b'])
+
+    logger.info('Open Print dialog')
+    xdotool(['key', 'Tab'])
+    xdotool(['key', 'Tab'])
+    xdotool(['key', 'Tab'])
+    xdotool(['key', 'Return'])
 
     logger.info('Enter build output directory')
-    xdotool(['type', output_directory])
+    xdotool(['key', 'Tab'])
+    xdotool(['key', 'alt+n'])
+    xdotool(['type', output_name])
 
-    logger.info('Select PDF plot format')
-    xdotool([
-        'key',
-        'Tab',
-        'Tab',
-        'Tab',
-        'Tab',
-        'Tab',
-        'Up',
-        'Up',
-        'Up',
-        'space',
-    ])
-
-    logger.info('Plot')
-    xdotool(['key', 'Return'])
+    wait_for_window('print', 'Print')
+    logger.info('Print!')
+    xdotool(['key', 'alt+p'])
 
     logger.info('Wait before shutdown')
     time.sleep(2)
@@ -89,7 +87,7 @@ def export_schematic(sch_name):
     with versioned_schematic(schematic_file):
         with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
             with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
-                eeschema_plot_schematic(output_dir)
+                eeschema_plot_schematic(schematic_output_pdf_file)
                 eeschema_proc.terminate()
 
     logger.info('Rasterize')

@@ -39,6 +39,11 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def eeschema_plot_schematic(output_name):
+    """Send keystrokes for printing schematic
+
+    Keyword arguments:
+    output_name -- The output pdf file name
+    """
     wait_for_window('eeschema', '\[')
 
     logger.info('Focus main eeschema window')
@@ -74,12 +79,20 @@ def eeschema_plot_schematic(output_name):
     time.sleep(2)
 
 def export_schematic(sch_name):
+    """Print schematics to file in PDF format
+
+    Keyword arguments:
+    sch_name -- The schematic file name including relative path
+    from project_root WITHOUT extension.
+    """
     sch_file_path = os.path.dirname(sch_name)
     sch_file_name = os.path.basename(sch_name)
     schematic_file = os.path.join(project_root, sch_name+'.sch')
-    output_dir = os.path.join(project_root, 'CI-BUILD')
+
+    output_dir = os.path.join(project_root, 'CI-BUILD/SCH')
     file_util.mkdir_p(output_dir)
 
+    #TODO: Remove when stable
     screencast_output_file = os.path.join(output_dir, 'export_schematic_screencast.ogv')
     schematic_output_pdf_file = os.path.join(output_dir, sch_file_name+'.pdf')
 
@@ -90,4 +103,7 @@ def export_schematic(sch_name):
                 eeschema_proc.terminate()
 
 if __name__ == '__main__':
+    if not sys.argv[1]:
+        raise ValueError('Schematic file was not provided!')
+
     export_schematic(sys.argv[1])

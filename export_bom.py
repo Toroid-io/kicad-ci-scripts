@@ -23,6 +23,7 @@ import time
 from contextlib import contextmanager
 
 repo_root = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.join(repo_root, '../')
 sys.path.append(repo_root)
 
 from util import file_util
@@ -56,8 +57,17 @@ def eeschema_export_bom(output_directory):
     time.sleep(2)
 
 def export_bom(sch_name):
-    schematic_file = os.path.join(repo_root, '../'+sch_name+'.sch')
-    output_dir = os.path.join(repo_root, '../CI-BUILD')
+    """Creates the BOM in xml and xlsx format (with kicost)
+
+    Keyword arguments:
+    sch_name -- The schematic file name including relative path
+    from project_root WITHOUT extension.
+    """
+    sch_file_path = os.path.dirname(sch_name)
+    sch_file_name = os.path.basename(sch_name)
+    schematic_file = os.path.join(project_root, sch_name+'.sch')
+
+    output_dir = os.path.join(project_root, 'CI-BUILD/BOM')
     file_util.mkdir_p(output_dir)
 
     screencast_output_file = os.path.join(output_dir, 'export_bom_screencast.ogv')
@@ -68,16 +78,18 @@ def export_bom(sch_name):
                 eeschema_export_bom(output_dir)
                 eeschema_proc.terminate()
 
-    logger.info('Convert component XML to useful BOM CSV file...')
+    logger.info('Create xlsx BOM with kicost')
     subprocess.check_call([
-        'python',
-        '-u',
-        os.path.join(repo_root, 'bom', 'generate_bom_csv.py'),
-        os.path.join(repo_root, sch_name+'.xml'),
-        os.path.join(output_dir, 'bom.csv'),
+        'kicost',
+        '-i',
+        os.path.join(project_root, sch_name+'.xml'),
+        '-o',
+        os.path.join(output_dir, sch_file_name+'.xlsx'),
     ])
 
-
 if __name__ == '__main__':
+    if not sys.argv[1]:
+        raise ValueError('Schematic file was not provided!')
+
     export_bom(sys.argv[1])
 

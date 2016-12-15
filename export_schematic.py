@@ -82,23 +82,12 @@ def export_schematic(sch_name):
 
     screencast_output_file = os.path.join(output_dir, 'export_schematic_screencast.ogv')
     schematic_output_pdf_file = os.path.join(output_dir, sch_file_name+'.pdf')
-    schematic_output_png_file = os.path.join(output_dir, sch_file_name+'.png')
 
     with versioned_schematic(schematic_file):
         with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
             with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
                 eeschema_plot_schematic(schematic_output_pdf_file)
                 eeschema_proc.terminate()
-
-    logger.info('Rasterize')
-    subprocess.check_call([
-        'convert',
-        '-density', '96',
-        schematic_output_pdf_file,
-       '-background', 'white',
-       '-alpha', 'remove',
-       schematic_output_png_file,
-   ])
 
 if __name__ == '__main__':
     export_schematic(sys.argv[1])

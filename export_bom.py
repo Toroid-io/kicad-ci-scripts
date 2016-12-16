@@ -23,7 +23,7 @@ import time
 from contextlib import contextmanager
 
 repo_root = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.join(repo_root, '../')
+project_root = os.getcwd()
 sys.path.append(repo_root)
 
 from util import file_util

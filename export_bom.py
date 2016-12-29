@@ -57,7 +57,7 @@ def eeschema_export_bom(output_directory):
     time.sleep(2)
 
 def export_bom(sch_name):
-    """Creates the BOM in xml and xlsx format (with kicost)
+    """Creates the BOM in xml
 
     Keyword arguments:
     sch_name -- The schematic file name including relative path
@@ -77,15 +77,6 @@ def export_bom(sch_name):
             with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
                 eeschema_export_bom(output_dir)
                 eeschema_proc.terminate()
-
-    logger.info('Create xlsx BOM with kicost')
-    subprocess.check_call([
-        'kicost',
-        '-i',
-        os.path.join(project_root, sch_name+'.xml'),
-        '-o',
-        os.path.join(output_dir, sch_file_name+'.xlsx'),
-    ])
 
 if __name__ == '__main__':
     if not sys.argv[1]:

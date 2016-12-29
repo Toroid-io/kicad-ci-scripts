@@ -1,0 +1,10 @@
+pipeline:
+  notify:
+    image: plugins/downstream
+    server: https://ci.toroid.io
+    repositories:
+      - ToroidDockerImages/kicad
+    when:
+      event: push
+      success: true
+      branch: master

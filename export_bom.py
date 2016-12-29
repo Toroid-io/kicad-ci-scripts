@@ -78,6 +78,13 @@ def export_bom(sch_name):
                 eeschema_export_bom(output_dir)
                 eeschema_proc.terminate()
 
+    # Copy BOM to CI Folder
+    subprocess.check_call([
+        'mv',
+        schematic_file+'.xml',
+        output_dir,
+    ])
+
 if __name__ == '__main__':
     if not sys.argv[1]:
         raise ValueError('Schematic file was not provided!')

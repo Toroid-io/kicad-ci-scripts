@@ -81,7 +81,7 @@ def export_bom(sch_name):
     # Copy BOM to CI Folder
     subprocess.check_call([
         'mv',
-        schematic_file+'.xml',
+        sche_name+'.xml',
         output_dir,
     ])
 

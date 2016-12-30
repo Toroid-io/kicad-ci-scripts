@@ -81,7 +81,7 @@ def export_bom(sch_name):
     # Copy BOM to CI Folder
     subprocess.check_call([
         'mv',
-        sche_name+'.xml',
+        sch_name+'.xml',
         output_dir,
     ])
 

@@ -27,7 +27,6 @@ repo_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(repo_root)
 
 from thirdparty.xvfbwrapper.xvfbwrapper import Xvfb
-from util import file_util, rev_info
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -74,24 +73,3 @@ def recorded_xvfb(video_filename, **xvfb_args):
                 '-o', video_filename], close_fds=True) as screencast_proc: 
             yield
             screencast_proc.terminate()
-
-def _get_versioned_contents(filename):
-    with open(filename, 'rb') as schematic:
-        original_contents = schematic.read()
-        return original_contents, original_contents \
-            .replace('Date ""', 'Date "%s"' % rev_info.current_date()) \
-            .replace('Rev ""', 'Rev "%s"' % rev_info.git_short_rev())
-
-@contextmanager
-def versioned_schematic(filename):
-    original_contents, versioned_contents = _get_versioned_contents(filename)
-    with open(filename, 'wb') as temp_schematic:
-        logger.debug('Writing to %s', filename)
-        temp_schematic.write(versioned_contents)
-    try:
-        yield
-    finally:
-        with open(filename, 'wb') as temp_schematic:
-            logger.debug('Restoring %s', filename)
-            temp_schematic.write(original_contents)
-

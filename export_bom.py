@@ -29,7 +29,6 @@ sys.path.append(repo_root)
 from util import file_util
 from export_util import (
     PopenContext,
-    versioned_schematic,
     xdotool,
     wait_for_window,
     recorded_xvfb,
@@ -72,11 +71,10 @@ def export_bom(sch_name):
 
     screencast_output_file = os.path.join(output_dir, 'export_bom_screencast.ogv')
 
-    with versioned_schematic(schematic_file):
-        with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
-            with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
-                eeschema_export_bom(output_dir)
-                eeschema_proc.terminate()
+    with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
+        with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
+            eeschema_export_bom(output_dir)
+            eeschema_proc.terminate()
 
     # Copy BOM to CI Folder
     subprocess.check_call([

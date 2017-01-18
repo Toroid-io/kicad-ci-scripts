@@ -29,7 +29,6 @@ sys.path.append(repo_root)
 from util import file_util
 from export_util import (
     PopenContext,
-    versioned_schematic,
     xdotool,
     wait_for_window,
     recorded_xvfb,
@@ -92,15 +91,14 @@ def export_schematic(sch_name):
     output_dir = os.path.join(project_root, 'CI-BUILD/SCH')
     file_util.mkdir_p(output_dir)
 
-    #TODO: Remove when stable
+    #TODO: Remove when stable or add debug flag
     screencast_output_file = os.path.join(output_dir, 'export_schematic_screencast.ogv')
     schematic_output_pdf_file = os.path.join(output_dir, sch_file_name+'.pdf')
 
-    with versioned_schematic(schematic_file):
-        with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
-            with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
-                eeschema_plot_schematic(schematic_output_pdf_file)
-                eeschema_proc.terminate()
+    with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
+        with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
+            eeschema_plot_schematic(schematic_output_pdf_file)
+            eeschema_proc.terminate()
 
 if __name__ == '__main__':
     if not sys.argv[1]:

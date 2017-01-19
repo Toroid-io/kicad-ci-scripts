@@ -82,15 +82,8 @@ def export_grb(brd_name):
 
     with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
         with PopenContext(['pcbnew', brd_file], close_fds=True) as pcbnew_proc:
-            pcbnew_export_bom(output_dir)
+            pcbnew_export_grb(output_dir)
             pcbnew_proc.terminate()
-
-    # Copy BOM to CI Folder
-    subprocess.check_call([
-        'mv',
-        sch_name+'.xml',
-        output_dir,
-    ])
 
 if __name__ == '__main__':
     if not sys.argv[1]:

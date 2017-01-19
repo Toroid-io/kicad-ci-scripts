@@ -64,7 +64,7 @@ def pcbnew_export_grb(output_directory):
     logger.info('Wait before shutdown')
     time.sleep(2)
 
-def export_grb(board_name):
+def export_grb(brd_name):
     """Plot the selected PCB layers in Gerber format
 
     Keyword arguments:

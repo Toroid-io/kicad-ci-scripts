@@ -108,7 +108,7 @@ def main(argv):
 
    args = parser.parse_args(argv)
    args.brd = os.path.abspath(args.brd+'.kicad_pcb')
-   args.dir = os.path.abspath(os.path.join(os.path.dirname(args.brd), args.dir))
+   args.dir = os.path.abspath(os.path.join(os.getcwd(), args.dir))
 
    mkdir_p(args.dir)
    os.chdir(args.dir)

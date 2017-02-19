@@ -1,93 +1,119 @@
-#!/usr/bin/env python
-
-#   Copyright 2015-2016 Scott Bezek and the splitflap contributors
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-
-import logging
-import os
-import subprocess
 import sys
-import time
+import os
+import errno
+import pcbnew
+import argparse
 
-from contextlib import contextmanager
+def plot(args):
+    # Load board and initialize plot controller
+    board = pcbnew.LoadBoard(args.brd)
+    pc = pcbnew.PLOT_CONTROLLER(board)
+    po = pc.GetPlotOptions()
+    po.SetPlotFrameRef(False)
+    po.SetExcludeEdgeLayer(True)
+    po.SetOutputDirectory(args.dir)
+    po.SetUseGerberProtelExtensions(args.protel)
 
-repo_root = os.path.dirname(os.path.abspath(__file__))
-project_root = os.getcwd()
-sys.path.append(repo_root)
+    if(args.fcu or args.all):
+        suffix = 'F.Cu'
+        if(args.protel):
+            suffix = ''
+        # Set current layer
+        pc.SetLayer(pcbnew.F_Cu)
+        # Plot single layer to file
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GTL')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-from util import file_util
-from export_util import (
-    PopenContext,
-    xdotool,
-    wait_for_window,
-    recorded_xvfb,
-)
+    if(args.bcu or args.all):
+        suffix = 'B.Cu'
+        if(args.protel):
+            suffix = ''
+        pc.SetLayer(pcbnew.B_Cu)
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GBL')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+    if(args.fmask or args.all):
+        suffix = 'F.Mask'
+        if(args.protel):
+            suffix = ''
+        pc.SetLayer(pcbnew.F_Mask)
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GTS')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-def pcbnew_export_grb(output_directory):
-    wait_for_window('pcbnew', '\[')
+    if(args.bmask or args.all):
+        suffix = 'B.Mask'
+        if(args.protel):
+            suffix = ''
+        pc.SetLayer(pcbnew.B_Mask)
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GBS')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-    logger.info('Focus main pcbnew window')
-    xdotool(['search', '--name', '\[', 'windowfocus'])
+    if(args.fsilks or args.all):
+        suffix = 'F.SilkS'
+        if(args.protel):
+            suffix = ''
+        pc.SetLayer(pcbnew.F_SilkS)
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GTO')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-    logger.info('Open File->Plot')
-    xdotool(['key', 'alt+f'])
-    xdotool(['key', 'l'])
+    if(args.bsilks or args.all):
+        suffix = 'B.SilkS'
+        if(args.protel):
+            suffix = ''
+        pc.SetLayer(pcbnew.B_SilkS)
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GBO')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-    logger.info('Set output directory')
-    wait_for_window('plot', 'Plot')
-    xdotool(['key', 'Tab'])
-    xdotool(['type', output_directory])
+    if(args.edgecuts or args.all):
+        suffix = 'Edge.Cuts'
+        if(args.protel):
+            suffix = ''
+        pc.SetLayer(pcbnew.Edge_Cuts)
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GKO')
+        print('Plotting to ' + pc.GetPlotFileName())
+        pc.PlotLayer()
 
-    logger.info('Plot!')
-    xdotool(['search', '--name', 'Plot', 'windowfocus'])
-    xdotool(['key', 'shift+Tab'])
-    xdotool(['key', 'shift+Tab'])
-    xdotool(['key', 'shift+Tab'])
-    xdotool(['key', 'shift+Tab'])
-    xdotool(['key', 'shift+Tab'])
-    xdotool(['key', 'Return'])
+    pc.ClosePlot()
 
-    logger.info('Wait before shutdown')
-    time.sleep(2)
 
-def export_grb(brd_name):
-    """Plot the selected PCB layers in Gerber format
+def mkdir_p(path):
+    try:
+        os.makedirs(os.path.abspath(path))
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
-    Keyword arguments:
-    board_name -- The board file name including relative path
-    from project_root WITHOUT extension.
-    """
-    brd_file_path = os.path.dirname(brd_name)
-    brd_file_name = os.path.basename(brd_name)
-    brd_file = os.path.join(project_root, brd_name+'.kicad_pcb')
+def main(argv):
+   parser = argparse.ArgumentParser(description='Plot Gerber Files')
+   parser.add_argument('--brd', nargs='?', dest='brd', required=True)
+   parser.add_argument('--dir', nargs='?', dest='dir', default='./')
+   parser.add_argument('--all', action='store_true', dest='all', default=False)
+   parser.add_argument('--protel', action='store_true', dest='protel', default=False)
 
-    output_dir = os.path.join(project_root, 'CI-BUILD/GRB')
-    file_util.mkdir_p(output_dir)
+   parser.add_argument('--fcu', action='store_true', dest='fcu', default=False)
+   parser.add_argument('--bcu', action='store_true', dest='bcu', default=False)
+   parser.add_argument('--fmask', action='store_true', dest='fmask', default=False)
+   parser.add_argument('--bmask', action='store_true', dest='bmask', default=False)
+   parser.add_argument('--fsilks', action='store_true', dest='fsilks', default=False)
+   parser.add_argument('--bsilks', action='store_true', dest='bsilks', default=False)
+   parser.add_argument('--edgecuts', action='store_true', dest='edgecuts', default=False)
 
-    screencast_output_file = os.path.join(output_dir, 'export_grb_screencast.ogv')
+   args = parser.parse_args(argv)
+   args.brd = os.path.abspath(args.brd+'.kicad_pcb')
+   args.dir = os.path.abspath(os.path.join(os.path.dirname(args.brd), args.dir))
 
-    with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
-        with PopenContext(['pcbnew', brd_file], close_fds=True) as pcbnew_proc:
-            pcbnew_export_grb(output_dir)
-            pcbnew_proc.terminate()
+   mkdir_p(args.dir)
+   os.chdir(args.dir)
+
+   plot(args)
 
 if __name__ == '__main__':
-    if not sys.argv[1]:
-        raise ValueError('Board file was not provided!')
-
-    export_grb(sys.argv[1])
-
+    main(sys.argv[1:])

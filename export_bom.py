@@ -38,10 +38,10 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def eeschema_export_bom(output_directory):
-    wait_for_window('eeschema', '\[')
-
-    logger.info('Focus main eeschema window')
-    xdotool(['search', '--name', '\[', 'windowfocus'])
+    wait_for_window('eeschema', '\Loading')
+    # Give enough time to load the libraries
+    # This should be a parameter
+    time.sleep(5)
 
     logger.info('Open Tools->Generate Bill Of Materials')
     xdotool(['key', 'alt+t'])

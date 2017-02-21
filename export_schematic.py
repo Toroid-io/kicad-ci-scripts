@@ -43,10 +43,10 @@ def eeschema_plot_schematic(output_name):
     Keyword arguments:
     output_name -- The output pdf file name
     """
-    wait_for_window('eeschema', '\[')
-
-    logger.info('Focus main eeschema window')
-    xdotool(['search', '--name', '\[', 'windowfocus'])
+    wait_for_window('eeschema', '\Loading')
+    # Give enough time to load the libraries
+    # This should be a parameter
+    time.sleep(5)
 
     logger.info('Open File->Print')
     xdotool(['key', 'alt+f'])
@@ -75,7 +75,7 @@ def eeschema_plot_schematic(output_name):
     xdotool(['key', 'alt+p'])
 
     logger.info('Wait before shutdown')
-    time.sleep(2)
+    time.sleep(5)
 
 def export_schematic(sch_name):
     """Print schematics to file in PDF format

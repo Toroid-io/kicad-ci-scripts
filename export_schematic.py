@@ -46,7 +46,7 @@ def eeschema_plot_schematic(output_name):
     wait_for_window('eeschema', '\Loading')
     # Give enough time to load the libraries
     # This should be a parameter
-    time.sleep(5)
+    time.sleep(10)
 
     logger.info('Open File->Print')
     xdotool(['key', 'alt+f'])
@@ -75,7 +75,7 @@ def eeschema_plot_schematic(output_name):
     xdotool(['key', 'alt+p'])
 
     logger.info('Wait before shutdown')
-    time.sleep(5)
+    time.sleep(10)
 
 def export_schematic(sch_name):
     """Print schematics to file in PDF format

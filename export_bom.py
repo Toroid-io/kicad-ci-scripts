@@ -41,7 +41,7 @@ def eeschema_export_bom(output_directory):
     wait_for_window('eeschema', '\Loading')
     # Give enough time to load the libraries
     # This should be a parameter
-    time.sleep(5)
+    time.sleep(10)
 
     logger.info('Open Tools->Generate Bill Of Materials')
     xdotool(['key', 'alt+t'])

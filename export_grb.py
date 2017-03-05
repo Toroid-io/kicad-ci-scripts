@@ -5,14 +5,35 @@ import pcbnew
 import argparse
 
 def plot(args):
+    board = pcbnew.LoadBoard(args.brd + '.kicad_pcb')
+
     # Load board and initialize plot controller
-    board = pcbnew.LoadBoard(args.brd)
     pc = pcbnew.PLOT_CONTROLLER(board)
     po = pc.GetPlotOptions()
     po.SetPlotFrameRef(False)
     po.SetExcludeEdgeLayer(True)
     po.SetOutputDirectory(args.dir)
     po.SetUseGerberProtelExtensions(args.protel)
+
+    # Load board and initialize excellon writter
+    er = pcbnew.EXCELLON_WRITER(board)
+    mirror = False
+    minimalHeader = False
+    offset = pcbnew.wxPoint(0, 0)
+    merge_npth = not args.splitth
+    er.SetOptions(mirror, minimalHeader, offset, merge_npth)
+    metric_format = True
+    er.SetFormat(metric_format)
+    generate_drill = True
+    generate_map = False
+
+    if(args.drl or args.all):
+        if(args.splitth):
+            print('Plotting to ' + os.path.join(args.dir, os.path.basename(args.brd)) + '-PTH.drl')
+            print('Plotting to ' + os.path.join(args.dir, os.path.basename(args.brd)) + '-NPTH.drl')
+        else:
+            print('Plotting to ' + os.path.join(args.dir, os.path.basename(args.brd)) + '.drl')
+        er.CreateDrillandMapFilesSet(args.dir, generate_drill, generate_map)
 
     if(args.fcu or args.all):
         suffix = 'F.Cu'
@@ -75,7 +96,7 @@ def plot(args):
         if(args.protel):
             suffix = ''
         pc.SetLayer(pcbnew.Edge_Cuts)
-        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GKO')
+        pc.OpenPlotfile(suffix, pcbnew.PLOT_FORMAT_GERBER, 'GML')
         print('Plotting to ' + pc.GetPlotFileName())
         pc.PlotLayer()
 
@@ -105,9 +126,10 @@ def main(argv):
    parser.add_argument('--fsilks', action='store_true', dest='fsilks', default=False)
    parser.add_argument('--bsilks', action='store_true', dest='bsilks', default=False)
    parser.add_argument('--edgecuts', action='store_true', dest='edgecuts', default=False)
+   parser.add_argument('--drl', action='store_true', dest='drl', default=False)
+   parser.add_argument('--splitth', action='store_true', dest='splitth', default=False)
 
    args = parser.parse_args(argv)
-   args.brd = os.path.abspath(args.brd+'.kicad_pcb')
    args.dir = os.path.abspath(os.path.join(os.getcwd(), args.dir))
 
    mkdir_p(args.dir)

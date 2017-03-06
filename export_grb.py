@@ -132,6 +132,8 @@ def main(argv):
    args = parser.parse_args(argv)
    args.dir = os.path.abspath(os.path.join(os.getcwd(), args.dir))
 
+   args.brd = os.path.join(os.getcwd(), args.brd)
+
    mkdir_p(args.dir)
    os.chdir(args.dir)
 

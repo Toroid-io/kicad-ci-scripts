@@ -66,7 +66,7 @@ def export_bom(sch_name):
     sch_file_name = os.path.basename(sch_name)
     schematic_file = os.path.join(project_root, sch_name+'.sch')
 
-    output_dir = os.path.join(project_root, 'CI-BUILD/BOM')
+    output_dir = os.path.join(project_root, 'CI-BUILD/'+os.path.basename(sch_name)+'/BOM')
     file_util.mkdir_p(output_dir)
 
     screencast_output_file = os.path.join(output_dir, 'export_bom_screencast.ogv')

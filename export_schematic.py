@@ -88,7 +88,7 @@ def export_schematic(sch_name):
     sch_file_name = os.path.basename(sch_name)
     schematic_file = os.path.join(project_root, sch_name+'.sch')
 
-    output_dir = os.path.join(project_root, 'CI-BUILD/SCH')
+    output_dir = os.path.join(project_root, 'CI-BUILD/'+os.path.basename(sch_name)+'/SCH')
     file_util.mkdir_p(output_dir)
 
     #TODO: Remove when stable or add debug flag

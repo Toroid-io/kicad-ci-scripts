@@ -1,10 +1,10 @@
 pipeline:
   notify:
     image: plugins/downstream
-    server: https://ci.toroid.io
+    server: https://bianca.toroid.io
     repositories:
-      - ToroidDockerImages/kicad
+      - Toroid-io/drone-kicad
     when:
       event: push
-      success: true
+      status: success
       branch: master

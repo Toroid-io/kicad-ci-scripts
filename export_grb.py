@@ -3,6 +3,7 @@ import os
 import errno
 import pcbnew
 import argparse
+from util import file_util
 
 def plot(args):
     board = pcbnew.LoadBoard(args.brd + '.kicad_pcb')
@@ -103,15 +104,6 @@ def plot(args):
     pc.ClosePlot()
 
 
-def mkdir_p(path):
-    try:
-        os.makedirs(os.path.abspath(path))
-    except OSError as exc:  # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise
-
 def main(argv):
    parser = argparse.ArgumentParser(description='Plot Gerber Files')
    parser.add_argument('--brd', nargs='?', dest='brd', required=True)
@@ -134,7 +126,7 @@ def main(argv):
 
    args.brd = os.path.join(os.getcwd(), args.brd)
 
-   mkdir_p(args.dir)
+   file_util.mkdir_p(args.dir)
    os.chdir(args.dir)
 
    plot(args)

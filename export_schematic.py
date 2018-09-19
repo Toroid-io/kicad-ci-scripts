@@ -43,16 +43,13 @@ def eeschema_plot_schematic(output_name):
     Keyword arguments:
     output_name -- The output pdf file name
     """
-    wait_for_window('eeschema', '\Loading')
     # Give enough time to load the libraries
     # This should be a parameter
     time.sleep(10)
 
     logger.info('Open File->Print')
     xdotool(['key', 'alt+f'])
-    xdotool(['key', 'n'])
-    xdotool(['key', 'n'])
-    xdotool(['key', 'Return'])
+    xdotool(['key', 'p'])
 
     wait_for_window('print', 'Print')
 

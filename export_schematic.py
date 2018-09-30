@@ -74,18 +74,18 @@ def eeschema_plot_schematic(output_name):
     logger.info('Wait before shutdown')
     time.sleep(10)
 
-def export_schematic(sch_name):
+def export_schematic(prjfile):
     """Print schematics to file in PDF format
 
     Keyword arguments:
-    sch_name -- The schematic file name including relative path
+    prjfile -- The project file name including relative path
     from project_root WITHOUT extension.
     """
-    sch_file_path = os.path.dirname(sch_name)
-    sch_file_name = os.path.basename(sch_name)
-    schematic_file = os.path.join(project_root, sch_name+'.sch')
+    sch_file_path = os.path.dirname(prjfile)
+    sch_file_name = os.path.basename(prjfile)
+    schematic_file = os.path.join(project_root, prjfile+'.sch')
 
-    output_dir = os.path.join(project_root, 'CI-BUILD/'+os.path.basename(sch_name)+'/SCH')
+    output_dir = os.path.join(project_root,'CI-BUILD/SCH')
     file_util.mkdir_p(output_dir)
 
     #TODO: Remove when stable or add debug flag
@@ -99,6 +99,6 @@ def export_schematic(sch_name):
 
 if __name__ == '__main__':
     if not sys.argv[1]:
-        raise ValueError('Schematic file was not provided!')
+        raise ValueError('Project file was not provided!')
 
     export_schematic(sys.argv[1])

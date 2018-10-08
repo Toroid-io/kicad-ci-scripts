@@ -81,7 +81,7 @@ def cleanup(args):
     board = pcbnew.LoadBoard(board_file)
 
     output_dir = os.path.join(project_root,
-            'CI-BUILD/'+args.variant+'/DLF')
+            'CI-BUILD/'+board_file_name+'_'+args.variant+'/DLF')
     file_util.mkdir_p(output_dir)
 
     #TODO: Remove when stable or add debug flag

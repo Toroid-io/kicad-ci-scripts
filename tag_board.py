@@ -20,6 +20,8 @@ def tag(args):
                     d.SetText("%s"%args.commit)
                 if txt == "$tag$" and (args.tag_tag or args.all):
                     d.SetText("%s"%args.tag)
+                if txt == "$variant$" and (args.tag_var or args.all):
+                    d.SetText("%s"%args.variant)
 
     pcbnew.SaveBoard(args.brd + '.kicad_pcb', board)
 
@@ -29,6 +31,8 @@ def main(argv):
    parser.add_argument('--tag-date', action='store_true', dest='tag_date', default=False)
    parser.add_argument('--tag-commit', action='store_true', dest='tag_commit', default=False)
    parser.add_argument('--tag-tag', action='store_true', dest='tag_tag', default=False)
+   parser.add_argument('--tag-variant', action='store_true', dest='tag_var', default=False)
+   parser.add_argument('--variant', nargs='?', dest='variant', required=True)
    parser.add_argument('--commit', nargs='?', dest='commit', required=True)
    parser.add_argument('--tag', nargs='?', dest='tag', required=True)
    parser.add_argument('--all', action='store_true', dest='all', default=False)
@@ -41,5 +45,4 @@ def main(argv):
    tag(args)
 
 if __name__ == '__main__':
-    print "tag board puto"
     main(sys.argv[1:])

@@ -53,14 +53,14 @@ def pcbnew_cleanup(footprints):
     xdotool(['key', 'b'])
 
     logger.info('Wait to save')
-    time.sleep(5)
+    time.sleep(4)
 
     logger.info('Save board')
     xdotool(['key', 'alt+f'])
     xdotool(['key', 's'])
 
     logger.info('Wait before shutdown')
-    time.sleep(10)
+    time.sleep(5)
 
 def delete_footprints(args):
     """Delete the selected footprints from board

@@ -37,7 +37,7 @@ from export_util import (
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-def eeschema_plot_schematic(output_name):
+def eeschema_plot_schematic(output_name, wait_init):
     """Send keystrokes for printing schematic
 
     Keyword arguments:
@@ -45,7 +45,7 @@ def eeschema_plot_schematic(output_name):
     """
     # Give enough time to load the libraries
     # This should be a parameter
-    time.sleep(10)
+    time.sleep(float(wait_init))
 
     logger.info('Open File->Print')
     xdotool(['key', 'alt+f'])
@@ -74,7 +74,7 @@ def eeschema_plot_schematic(output_name):
     logger.info('Wait before shutdown')
     time.sleep(10)
 
-def export_schematic(prjfile):
+def export_schematic(prjfile, wait_init):
     """Print schematics to file in PDF format
 
     Keyword arguments:
@@ -94,11 +94,14 @@ def export_schematic(prjfile):
 
     with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
         with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
-            eeschema_plot_schematic(schematic_output_pdf_file)
+            eeschema_plot_schematic(schematic_output_pdf_file, wait_init)
             eeschema_proc.terminate()
 
 if __name__ == '__main__':
+    wait = 10
     if not sys.argv[1]:
         raise ValueError('Project file was not provided!')
+    if sys.argv[2]:
+        wait = sys.argv[2]
 
-    export_schematic(sys.argv[1])
+    export_schematic(sys.argv[1], wait)

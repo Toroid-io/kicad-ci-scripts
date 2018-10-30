@@ -25,7 +25,7 @@ from export_util import (
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-def pcbnew_cleanup(footprints):
+def pcbnew_cleanup(footprints, wait_init):
     """Send keystrokes for cleaning the pcb
 
     Keyword arguments:
@@ -33,7 +33,7 @@ def pcbnew_cleanup(footprints):
     """
     # Give enough time to load the libraries
     # This should be a parameter
-    time.sleep(10)
+    time.sleep(float(wait_init))
 
     logger.info('Open Edit -> Cleanup tracks and vias')
     xdotool(['key', 'alt+e'])
@@ -89,7 +89,7 @@ def cleanup(args):
 
     with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
         with PopenContext(['pcbnew', board_file], close_fds=True) as pcbnew_proc:
-            pcbnew_cleanup(args.footprints)
+            pcbnew_cleanup(args.footprints, args.wait_init)
             pcbnew_proc.terminate()
 
 def main(argv):
@@ -98,6 +98,7 @@ def main(argv):
     parser.add_argument('--brd', nargs='?', dest='brd', required=True)
     parser.add_argument('--variant', nargs='?', dest='variant', default='')
     parser.add_argument('--footprints', nargs='?', dest='footprints', required=True)
+    parser.add_argument('--wait_init', nargs='?', dest='wait_init', default=10)
     args = parser.parse_args(argv)
     args.dir = os.path.abspath(os.path.join(os.getcwd(), args.dir))
     args.brd = os.path.join(os.getcwd(), args.brd)

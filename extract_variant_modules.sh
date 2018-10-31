@@ -21,7 +21,7 @@ then
         done
     fi
 else
-    match='/.*/'
+    match='/*/'
 fi
 
 grep --line-number variant "$1" | \

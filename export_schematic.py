@@ -99,9 +99,9 @@ def export_schematic(prjfile, wait_init):
 
 if __name__ == '__main__':
     wait = 10
-    if not sys.argv[1]:
+    if len(sys.argv) < 2:
         raise ValueError('Project file was not provided!')
-    if sys.argv[2]:
+    elif len(sys.argv) > 2:
         wait = sys.argv[2]
 
     export_schematic(sys.argv[1], wait)

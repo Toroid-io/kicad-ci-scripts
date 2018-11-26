@@ -37,10 +37,9 @@ from export_util import (
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-def eeschema_export_bom(output_directory):
+def eeschema_export_bom(output_directory, wait_init):
     # Give enough time to load the libraries
-    # This should be a parameter
-    time.sleep(10)
+    time.sleep(float(wait_init))
 
     logger.info('Open Tools->Generate Bill Of Materials')
     xdotool(['key', 'alt+t'])
@@ -52,9 +51,9 @@ def eeschema_export_bom(output_directory):
     xdotool(['key', 'Return'])
 
     logger.info('Wait before shutdown')
-    time.sleep(2)
+    time.sleep(5)
 
-def export_bom(prjfile):
+def export_bom(prjfile, wait_init):
     """Creates the BOM in xml
 
     Keyword arguments:
@@ -65,26 +64,36 @@ def export_bom(prjfile):
     sch_file_name = os.path.basename(prjfile)
     schematic_file = os.path.join(project_root, prjfile+'.sch')
 
-    output_dir = os.path.join(project_root,'CI-BUILD/'+prjfile+'/BOM')
+    output_dir = os.path.join(project_root,'CI-BUILD/'+sch_file_name+'/BOM')
     file_util.mkdir_p(output_dir)
 
     screencast_output_file = os.path.join(output_dir, 'export_bom_screencast.ogv')
 
     with recorded_xvfb(screencast_output_file, width=800, height=600, colordepth=24):
         with PopenContext(['eeschema', schematic_file], close_fds=True) as eeschema_proc:
-            eeschema_export_bom(output_dir)
+            eeschema_export_bom(output_dir, wait_init)
             eeschema_proc.terminate()
 
-    # Copy BOM to CI Folder
+    # Copy xml BOM to CI Folder
     subprocess.check_call([
         'mv',
-        project+'.xml',
+        prjfile+'.xml',
         output_dir,
     ])
 
-if __name__ == '__main__':
-    if not sys.argv[1]:
-        raise ValueError('Project file was not provided!')
+    # Copy csv BOM to CI Folder
+    subprocess.check_call([
+        'mv',
+        prjfile,
+        output_dir+'/'+sch_file_name+'.csv',
+    ])
 
-    export_bom(sys.argv[1])
+if __name__ == '__main__':
+    wait = 10
+    if len(sys.argv) < 2:
+        raise ValueError('Project file was not provided!')
+    elif len(sys.argv) > 2:
+        wait = sys.argv[2]
+
+    export_bom(sys.argv[1], wait)
 

@@ -44,7 +44,6 @@ def eeschema_plot_schematic(output_name, wait_init):
     output_name -- The output pdf file name
     """
     # Give enough time to load the libraries
-    # This should be a parameter
     time.sleep(float(wait_init))
 
     logger.info('Open File->Print')

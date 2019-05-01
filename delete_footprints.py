@@ -37,9 +37,7 @@ def pcbnew_cleanup(wait_init):
 
     logger.info('Open Edit -> Cleanup tracks and vias')
     xdotool(['key', 'alt+e'])
-    xdotool(['key', 'c'])
-    xdotool(['key', 'c'])
-    xdotool(['key', 'c'])
+    xdotool(['key', 'l'])
     xdotool(['key', 'Return'])
 
     wait_for_window('cleanup', 'Cleaning Options')

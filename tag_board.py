@@ -41,7 +41,6 @@ def main(argv):
 
    args.brd = os.path.join(os.getcwd(), args.brd)
 
-   print args
    tag(args)
 
 if __name__ == '__main__':
